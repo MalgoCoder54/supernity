@@ -82,7 +82,7 @@ async function sendMessage() {
             })
         });
 
-        addMessage("bot", response.content);
+        addMessage("bot", response);
 
         const data = await response.json();
 
