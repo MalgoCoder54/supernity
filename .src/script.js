@@ -41,7 +41,7 @@ function sendMessage() {
 
     // Simula una risposta del bot
     setTimeout(() => {
-        const botReply = "Servizio disponibile a breve. Per ulteriori informazioni, contatta il nostro supporto.";
+        const botReply = "Servizio disponibile a breve. Per ulteriori informazioni, contattaci con una email a info@supernity.ai o usando il form di contatto in fondo alla pagina";
         appendMessage("bot", botReply);
     }, 1000);
 }
