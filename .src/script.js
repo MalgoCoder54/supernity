@@ -81,6 +81,10 @@ async function sendMessage() {
             })
         });
 
+        //print the response in the console
+
+        console.log(response);
+
         const responseText = await response.text();
 
         let data;
