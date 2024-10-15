@@ -57,7 +57,7 @@ module.exports = async function (context, req) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: response.data
+            body: response.data.choices[0]['message'].content
         };
     } catch (error) {
         // Log dell'errore per il debug
