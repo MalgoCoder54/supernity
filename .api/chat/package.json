@@ -2,10 +2,11 @@
   "name": "chat-function",
   "version": "1.0.0",
   "description": "Azure Function for chat",
-  "main": "index.js",
+  "main": "chat.js",
   "author": "",
   "license": "MIT",
   "dependencies": {
     "axios": "^0.27.2"
-  }
+  },
+  "keywords": []
 }

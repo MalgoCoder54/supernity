@@ -29,6 +29,7 @@ document.getElementById("user-input").addEventListener("keyup", function(event) 
     }
 });
 
+// Funzione per inviare il messaggio
 async function sendMessage() {
     const userInput = document.getElementById("user-input");
     const messageText = userInput.value.trim();
@@ -43,12 +44,7 @@ async function sendMessage() {
     // Aggiungi il messaggio dell'utente a sessionMessages
     sessionMessages.push({
         role: "user",
-        content: [
-            {
-                type: "text",
-                text: messageText
-            }
-        ]
+        content: messageText
     });
 
     // Limita sessionMessages agli ultimi 10 messaggi (5 interazioni)
@@ -60,12 +56,7 @@ async function sendMessage() {
     const messagesToSend = [
         {
             role: "system",
-            content: [
-                {
-                    type: "text",
-                    text: "Sei un assistente AI chiamato 'Harry Potter' che fornisce informazioni sull'azienda Supernity. Ecco le informazioni che puoi fornire:\n\n[... informazioni dettagliate ...]"
-                }
-            ]
+            content: "Sei un assistente AI chiamato 'Harry Potter' che fornisce informazioni sull'azienda Supernity. Ecco le informazioni che puoi fornire:\n\n Siamo nuovi e ci piace molto bere e mangiare"
         },
         ...sessionMessages
     ];
@@ -81,27 +72,8 @@ async function sendMessage() {
             })
         });
 
-        //print the response in the console
-
-        console.log(response);
-
-        const responseText = await response.text();
-
-        let data;
-        try {
-            addMessage("bot", `Risposta ricevuta dal server: ${responseText}`);
-            data = JSON.parse(responseText);
-        } catch (error) {
-            console.error('Errore nell\'analisi della risposta JSON:', error);
-            addMessage("bot", `Errore nell'analisi della risposta JSON: ${error.message}`);
-            addMessage("bot", `Testo della risposta: ${responseText}`);
-            return;
-        }
-
-        // Mostra il testo della risposta per il debug (opzionale)
-        addMessage("bot", JSON.stringify(data, null, 2));
-
         if (response.ok) {
+            const data = await response.json();
             const assistantMessageContent = data.choices[0].message.content;
 
             // Aggiungi la risposta dell'assistente alla chat
@@ -110,12 +82,7 @@ async function sendMessage() {
             // Aggiungi la risposta dell'assistente a sessionMessages
             sessionMessages.push({
                 role: "assistant",
-                content: [
-                    {
-                        type: "text",
-                        text: assistantMessageContent
-                    }
-                ]
+                content: assistantMessageContent
             });
 
             // Limita sessionMessages agli ultimi 10 messaggi
@@ -123,8 +90,9 @@ async function sendMessage() {
                 sessionMessages = sessionMessages.slice(-10);
             }
         } else {
-            console.error('Errore nella risposta:', data);
-            addMessage("bot", `Si è verificato un errore: ${data.error || 'Errore sconosciuto'}`);
+            const errorData = await response.json();
+            console.error('Errore nella risposta:', errorData);
+            addMessage("bot", `Si è verificato un errore: ${errorData.error || 'Errore sconosciuto'}`);
         }
     } catch (error) {
         console.error('Errore nella richiesta:', error);
@@ -133,6 +101,7 @@ async function sendMessage() {
     }
 }
 
+// Funzione per aggiungere un messaggio alla chat
 function addMessage(sender, text) {
     const chatMessages = document.getElementById("chat-messages");
 
@@ -140,16 +109,12 @@ function addMessage(sender, text) {
     messageElement.classList.add("chat-message", sender);
 
     const messageText = document.createElement("p");
-    if (sender === "user") {
-        messageText.textContent = text;
-    } else {
-        messageText.innerHTML = text;
-    }
+    messageText.textContent = text;
 
     const timeStamp = document.createElement("span");
     timeStamp.classList.add("timestamp");
     const now = new Date();
-    timeStamp.textContent = now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes();
+    timeStamp.textContent = now.getHours() + ":" + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
 
     messageElement.appendChild(messageText);
     messageElement.appendChild(timeStamp);
@@ -157,7 +122,6 @@ function addMessage(sender, text) {
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
-
 
 // Scorrimento fluido per i link interni
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {

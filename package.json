@@ -47,28 +47,15 @@
       }
     }
   },
+  "description": "[Azure Static Web Apps](https://docs.microsoft.com/azure/static-web-apps/overview) allows you to easily build JavaScript apps in minutes. Use this repo with the [quickstart](https://docs.microsoft.com/azure/static-web-apps/getting-started?tabs=vanilla-javascript) to build and customize a new static site.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "@playwright/test": {
-      "version": "1.22.2",
-      "resolved": "https://registry.npmjs.org/@playwright/test/-/test-1.22.2.tgz",
-      "integrity": "sha512-cCl96BEBGPtptFz7C2FOSN3PrTnJ3rPpENe+gYCMx4GNNDlN4tmo2D89y13feGKTMMAIVrXfSQ/UmaQKLy1XLA==",
-      "dev": true,
-      "requires": {
-        "@types/node": "*",
-        "playwright-core": "1.22.2"
-      }
-    },
-    "@types/node": {
-      "version": "18.0.0",
-      "resolved": "https://registry.npmjs.org/@types/node/-/node-18.0.0.tgz",
-      "integrity": "sha512-cHlGmko4gWLVI27cGJntjs/Sj8th9aYwplmZFwmmgYQQvL5NUsgVJG7OddLvNfLqYS31KFN0s3qlaD9qCaxACA==",
-      "dev": true
-    },
-    "playwright-core": {
-      "version": "1.22.2",
-      "resolved": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.22.2.tgz",
-      "integrity": "sha512-w/hc/Ld0RM4pmsNeE6aL/fPNWw8BWit2tg+TfqJ3+p59c6s3B6C8mXvXrIPmfQEobkcFDc+4KirNzOQ+uBSP1Q==",
-      "dev": true
-    }
+    "axios": "^1.7.7"
   }
 }

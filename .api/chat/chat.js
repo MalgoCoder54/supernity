@@ -2,7 +2,7 @@ const axios = require('axios');
 
 module.exports = async function (context, req) {
     const API_KEY = process.env.API_KEY;
-    const ENDPOINT = 'https://openaimalgo.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-02-15-preview';
+    const ENDPOINT = process.env.ENDPOINT;
 
     // Verifica che la chiave API sia presente
     if (!API_KEY) {
@@ -16,6 +16,7 @@ module.exports = async function (context, req) {
 
     const clientMessages = req.body.messages;
 
+    // Verifica la presenza dei messaggi e che siano un array
     if (!clientMessages || !Array.isArray(clientMessages)) {
         context.res = {
             status: 400,
@@ -24,15 +25,10 @@ module.exports = async function (context, req) {
         return;
     }
 
-    // Trasforma i messaggi nel formato richiesto dall'API
-    const messages = clientMessages.map(msg => {
-        const contentText = msg.content.map(item => item.text).join('\n');
-        return {
-            role: msg.role,
-            content: contentText
-        };
-    });
+    // Utilizza direttamente i messaggi forniti dal client
+    const messages = clientMessages;
 
+    // Prepara il payload da inviare all'API di OpenAI
     const payload = {
         messages: messages,
         temperature: 0.7,
@@ -41,6 +37,10 @@ module.exports = async function (context, req) {
     };
 
     try {
+        // Log per il debug
+        context.log('Payload inviato all\'API di OpenAI:', JSON.stringify(payload));
+
+        // Effettua la richiesta all'API di OpenAI
         const response = await axios.post(ENDPOINT, payload, {
             headers: {
                 'Content-Type': 'application/json',
@@ -48,11 +48,19 @@ module.exports = async function (context, req) {
             },
         });
 
+        // Log della risposta per il debug
+        context.log('Risposta ricevuta dall\'API di OpenAI:', response.data);
+
+        // Restituisci la risposta ricevuta dall'API
         context.res = {
             status: 200,
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: response.data
         };
     } catch (error) {
+        // Log dell'errore per il debug
         context.log.error('Errore nella richiesta all\'API di OpenAI:', error.message);
         context.res = {
             status: 500,
