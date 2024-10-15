@@ -1,126 +1,62 @@
 // Logica per il modal del chatbot
 // Variabile per memorizzare i messaggi della sessione
-let sessionMessages = [];
+// Script per il Chatbot
+const chatbotButton = document.getElementById("chatbot-button");
+const chatbotModal = document.getElementById("chatbot-modal");
+const closeModal = document.querySelector(".close");
+const sendButton = document.getElementById("send-button");
+const chatMessages = document.getElementById("chat-messages");
+const userInput = document.getElementById("user-input");
 
-// Apri il modal del chatbot
-document.getElementById("chatbot-button").addEventListener("click", function () {
-    document.getElementById("chatbot-modal").style.display = "flex";
+// Mostra/Nasconde il modal del chatbot
+chatbotButton.addEventListener("click", () => {
+    chatbotModal.style.display = "flex";
 });
 
-// Chiudi il modal del chatbot
-document.getElementsByClassName("close")[0].addEventListener("click", function () {
-    document.getElementById("chatbot-modal").style.display = "none";
+closeModal.addEventListener("click", () => {
+    chatbotModal.style.display = "none";
 });
 
-// Chiudi il modal cliccando fuori dal contenuto
-window.onclick = function (event) {
-    if (event.target === document.getElementById("chatbot-modal")) {
-        document.getElementById("chatbot-modal").style.display = "none";
+window.addEventListener("click", (event) => {
+    if (event.target == chatbotModal) {
+        chatbotModal.style.display = "none";
     }
-};
+});
 
-// Gestisci l'invio del messaggio
-document.getElementById("send-button").addEventListener("click", sendMessage);
-
-// Permetti l'invio del messaggio premendo "Enter"
-document.getElementById("user-input").addEventListener("keyup", function(event) {
-    if (event.key === 'Enter') {
+// Invia il messaggio dell'utente e risposta simulata del bot
+sendButton.addEventListener("click", sendMessage);
+userInput.addEventListener("keypress", (event) => {
+    if (event.key === "Enter") {
         sendMessage();
     }
 });
 
-// Funzione per inviare il messaggio
-async function sendMessage() {
-    const userInput = document.getElementById("user-input");
+function sendMessage() {
     const messageText = userInput.value.trim();
     if (messageText === "") return;
 
     // Aggiungi il messaggio dell'utente alla chat
-    addMessage("user", messageText);
-
-    // Pulisci il campo di input
+    appendMessage("user", messageText);
     userInput.value = "";
 
-    // Aggiungi il messaggio dell'utente a sessionMessages
-    sessionMessages.push({
-        role: "user",
-        content: messageText
-    });
-
-    // Limita sessionMessages agli ultimi 10 messaggi (5 interazioni)
-    if (sessionMessages.length > 10) {
-        sessionMessages = sessionMessages.slice(-10);
-    }
-
-    // Prepara i messaggi da inviare, includendo il messaggio di sistema
-    const messagesToSend = [
-        {
-            role: "system",
-            content: "Sei un assistente AI chiamato 'Harry Potter' che fornisce informazioni sull'azienda Supernity. Ecco le informazioni che puoi fornire:\n\n Siamo nuovi e ci piace molto bere e mangiare"
-        },
-        ...sessionMessages
-    ];
-
-    try {
-        const response = await fetch('/api/chat', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                messages: messagesToSend
-            })
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            const assistantMessageContent = data.choices[0].message.content;
-
-            // Aggiungi la risposta dell'assistente alla chat
-            addMessage("bot", assistantMessageContent);
-
-            // Aggiungi la risposta dell'assistente a sessionMessages
-            sessionMessages.push({
-                role: "assistant",
-                content: assistantMessageContent
-            });
-
-            // Limita sessionMessages agli ultimi 10 messaggi
-            if (sessionMessages.length > 10) {
-                sessionMessages = sessionMessages.slice(-10);
-            }
-        } else {
-            const errorData = await response.json();
-            console.error('Errore nella risposta:', errorData);
-            addMessage("bot", `Si è verificato un errore: ${errorData.error || 'Errore sconosciuto'}`);
-        }
-    } catch (error) {
-        console.error('Errore nella richiesta:', error);
-        addMessage("bot", "Si è verificato un errore di connessione. Per favore, controlla la tua connessione internet e riprova.");
-        addMessage("bot", `Dettagli dell'errore: ${error.message}`);
-    }
+    // Simula una risposta del bot
+    setTimeout(() => {
+        const botReply = "Servizio disponibile a breve. Per ulteriori informazioni, contatta il nostro supporto.";
+        appendMessage("bot", botReply);
+    }, 1000);
 }
 
 // Funzione per aggiungere un messaggio alla chat
-function addMessage(sender, text) {
-    const chatMessages = document.getElementById("chat-messages");
-
+function appendMessage(sender, message) {
     const messageElement = document.createElement("div");
     messageElement.classList.add("chat-message", sender);
 
     const messageText = document.createElement("p");
-    messageText.textContent = text;
-
-    const timeStamp = document.createElement("span");
-    timeStamp.classList.add("timestamp");
-    const now = new Date();
-    timeStamp.textContent = now.getHours() + ":" + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
-
+    messageText.textContent = message;
     messageElement.appendChild(messageText);
-    messageElement.appendChild(timeStamp);
-    chatMessages.appendChild(messageElement);
 
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    chatMessages.appendChild(messageElement);
+    chatMessages.scrollTop = chatMessages.scrollHeight; // Scrolla automaticamente verso il basso
 }
 
 // Scorrimento fluido per i link interni

@@ -16,6 +16,77 @@ h3 {
     color: #AC94F4;
 }
 
+/* Stile per il container con angoli smussati */
+.rounded-container {
+    background-color: #ffffff; /* Colore di sfondo del container */
+    border-radius: 15px; /* Angoli smussati */
+    padding: 30px; /* Spaziatura interna */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ombreggiatura per dare profondità */
+    margin: 40px 0; /* Spaziatura esterna */
+}
+
+/* Stile per il container delle tile */
+.tile-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 30px;
+    flex-wrap: wrap; /* Permette di gestire il layout sui dispositivi mobili */
+}
+
+.tile {
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 20px;
+    flex: 1;
+    min-width: 250px; /* Larghezza minima per le tile */
+    max-width: 30%; /* Larghezza massima per ogni tile */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.tile h3 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.tile p {
+    font-size: 1em;
+    line-height: 1.6;
+    color: #555;
+}
+
+/* Effetto hover per le tile */
+.tile:hover {
+    transform: translateY(-5px);
+}
+
+/* Responsive: Disposizione verticale per schermi piccoli */
+@media (max-width: 768px) {
+    .tile-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .tile {
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
+/* Stile per i paragrafi a larghezza completa */
+.full-width-paragraph {
+    max-width: 100%; /* Occupa l'intera larghezza */
+    margin: 0 auto;  /* Centra il paragrafo */
+    text-align: left; /* Allineamento a sinistra */
+    line-height: 1.6; /* Migliora la leggibilità */
+    font-size: 1.1em; /* Dimensione del font */
+    color: #555; /* Colore del testo */
+}
+
+
 /* Sezione Hero */
 #hero {
     background-image: url('immagini/hero-background.jpg');
