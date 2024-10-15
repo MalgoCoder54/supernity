@@ -6,7 +6,9 @@ module.exports = async function (context, req) {
 
     const clientMessages = req.body.messages;
 
+    // Trasforma i messaggi nel formato richiesto dall'API
     const messages = clientMessages.map(msg => {
+        // Combina i testi nel content
         const contentText = msg.content.map(item => item.text).join('\n');
 
         return {
