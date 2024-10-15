@@ -82,6 +82,8 @@ async function sendMessage() {
             })
         });
 
+        addMessage("bot", response.content);
+
         const data = await response.json();
 
         if (response.ok) {
