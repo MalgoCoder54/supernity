@@ -82,10 +82,10 @@ async function sendMessage() {
             })
         });
 
+        const responseText = await response.text();
+        //const data = await response.json();
 
-        const data = await response.json();
-
-        addMessage("bot", data);
+        addMessage("bot", responseText);
 
         if (response.ok) {
             const assistantMessageContent = data.choices[0].message.content;
