@@ -4,10 +4,19 @@ module.exports = async function (context, req) {
     const API_KEY = process.env.API_KEY;
     const ENDPOINT = 'https://openaimalgo.openai.azure.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-02-15-preview';
 
-    const userMessages = req.body.messages;
+    const clientMessages = req.body.messages;
+
+    const messages = clientMessages.map(msg => {
+        const contentText = msg.content.map(item => item.text).join('\n');
+
+        return {
+            role: msg.role,
+            content: contentText
+        };
+    });
 
     const payload = {
-        messages: userMessages,
+        messages: messages,
         temperature: 0.7,
         top_p: 0.95,
         max_tokens: 800
