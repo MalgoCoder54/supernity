@@ -29,7 +29,6 @@ document.getElementById("user-input").addEventListener("keyup", function(event) 
     }
 });
 
-
 async function sendMessage() {
     const userInput = document.getElementById("user-input");
     const messageText = userInput.value.trim();
@@ -64,7 +63,7 @@ async function sendMessage() {
             content: [
                 {
                     type: "text",
-                    text: "Sei un assistente AI chiamato 'Harry Potter' che fornisce informazioni sull'azienda Supernity. Ecco le informazioni che puoi fornire:\n\nè un'azienda innovativa specializzata in soluzioni di consulenza tecnologica con un forte focus sull'intelligenza artificiale. La nostra missione è aiutare le aziende a trasformare i loro processi operativi e a migliorare l'efficienza e ad aumentare il business attraverso l'adozione di tecnologie avanzate.\n\nConsulenza strategica: Analisi delle esigenze aziendali e sviluppo di strategie personalizzate per l'implementazione di soluzioni di intelligenza artificiale.\nSviluppo di soluzioni AI: Creazione di applicazioni basate su intelligenza artificiale, machine learning e deep learning per risolvere problemi complessi e migliorare la produttività.\nIntegrazione di sistemi: Implementazione e integrazione di soluzioni AI con i sistemi esistenti per garantire una transizione fluida e senza interruzioni.\nFormazione e supporto: Programmi di formazione per il personale aziendale e supporto continuo per garantire il massimo rendimento delle soluzioni implementate, l’adozione corretta delle nuove tecnologie e l’evoluzione comportamentale delle risorse.\n\nQuando ci sono domande specifiche, rimanda sempre all'email 'info@supernity.it'.\n\nNon rispondere a nulla che non siano domande su Supernity, dicendo 'Hey amico, questo per me è fuori scopo' se ti fanno altre domande."
+                    text: "Sei un assistente AI chiamato 'Harry Potter' che fornisce informazioni sull'azienda Supernity. Ecco le informazioni che puoi fornire:\n\n[... informazioni dettagliate ...]"
                 }
             ]
         },
@@ -82,9 +81,20 @@ async function sendMessage() {
             })
         });
 
-        const data = await response.json();
+        const responseText = await response.text();
 
-        addMessage("bot", `Dettagli dell'errore: ${data}`);
+        let data;
+        try {
+            data = JSON.parse(responseText);
+        } catch (error) {
+            console.error('Errore nell\'analisi della risposta JSON:', error);
+            addMessage("bot", `Errore nell'analisi della risposta JSON: ${error.message}`);
+            addMessage("bot", `Testo della risposta: ${responseText}`);
+            return;
+        }
+
+        // Mostra il testo della risposta per il debug (opzionale)
+        addMessage("bot", JSON.stringify(data, null, 2));
 
         if (response.ok) {
             const assistantMessageContent = data.choices[0].message.content;
@@ -109,7 +119,7 @@ async function sendMessage() {
             }
         } else {
             console.error('Errore nella risposta:', data);
-            addMessage("bot", "Si è verificato un errore. Per favore, riprova più tardi.");
+            addMessage("bot", `Si è verificato un errore: ${data.error || 'Errore sconosciuto'}`);
         }
     } catch (error) {
         console.error('Errore nella richiesta:', error);
@@ -117,9 +127,6 @@ async function sendMessage() {
         addMessage("bot", `Dettagli dell'errore: ${error.message}`);
     }
 }
-
-
-
 
 function addMessage(sender, text) {
     const chatMessages = document.getElementById("chat-messages");
