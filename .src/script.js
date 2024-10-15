@@ -30,19 +30,48 @@ document.getElementById("user-input").addEventListener("keyup", function(event) 
 });
 
 
+let sessionMessages = [];
+
 async function sendMessage() {
     const userInput = document.getElementById("user-input");
-    const message = userInput.value.trim();
-    if (message === "") return;
+    const messageText = userInput.value.trim();
+    if (messageText === "") return;
 
     // Aggiungi il messaggio dell'utente alla chat
-    addMessage("user", message);
+    addMessage("user", messageText);
 
     // Pulisci il campo di input
     userInput.value = "";
 
-    // Aggiungi il messaggio alla lista della sessione
-    sessionMessages.push(message);
+    // Aggiungi il messaggio dell'utente a sessionMessages
+    sessionMessages.push({
+        role: "user",
+        content: [
+            {
+                type: "text",
+                text: messageText
+            }
+        ]
+    });
+
+    // Limita sessionMessages agli ultimi 10 messaggi (5 interazioni)
+    if (sessionMessages.length > 10) {
+        sessionMessages = sessionMessages.slice(-10);
+    }
+
+    // Prepara i messaggi da inviare, includendo il messaggio di sistema
+    const messagesToSend = [
+        {
+            role: "system",
+            content: [
+                {
+                    type: "text",
+                    text: "Sei un assistente AI chiamato 'Harry Potter' che fornisce informazioni sull'azienda Supernity. Ecco le informazioni che puoi fornire:\n\nè un'azienda innovativa specializzata in soluzioni di consulenza tecnologica con un forte focus sull'intelligenza artificiale. La nostra missione è aiutare le aziende a trasformare i loro processi operativi e a migliorare l'efficienza e ad aumentare il business attraverso l'adozione di tecnologie avanzate.\n\nConsulenza strategica: Analisi delle esigenze aziendali e sviluppo di strategie personalizzate per l'implementazione di soluzioni di intelligenza artificiale.\nSviluppo di soluzioni AI: Creazione di applicazioni basate su intelligenza artificiale, machine learning e deep learning per risolvere problemi complessi e migliorare la produttività.\nIntegrazione di sistemi: Implementazione e integrazione di soluzioni AI con i sistemi esistenti per garantire una transizione fluida e senza interruzioni.\nFormazione e supporto: Programmi di formazione per il personale aziendale e supporto continuo per garantire il massimo rendimento delle soluzioni implementate, l’adozione corretta delle nuove tecnologie e l’evoluzione comportamentale delle risorse.\n\nQuando ci sono domande specifiche, rimanda sempre all'email 'info@supernity.it'.\n\nNon rispondere a nulla che non siano domande su Supernity, dicendo 'Hey amico, questo per me è fuori scopo' se ti fanno altre domande."
+                }
+            ]
+        },
+        ...sessionMessages
+    ];
 
     try {
         const response = await fetch('/api/chat', {
@@ -51,29 +80,32 @@ async function sendMessage() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                messages: [
-                    {
-                        role: 'system',
-                        content: "Sei un assistente AI chiamato 'Harry Potter' che fornisce informazioni sull'azienda Supernity. Ecco le informazioni che puoi fornire:\n\n[Inserisci qui le informazioni dettagliate come nel tuo prompt Python]\n\nQuando ci sono domande specifiche, rimanda sempre all'email 'info@supernity.it'.\n\nNon rispondere a nulla che non siano domande su Supernity, dicendo 'Hey amico, questo per me è fuori scopo' se ti fanno altre domande."
-                    },
-                    ...sessionMessages
-                ]
+                messages: messagesToSend
             })
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            const assistantMessage = data.choices[0].message.content;
-            addMessage("bot", assistantMessage);
+            const assistantMessageContent = data.choices[0].message.content;
 
+            // Aggiungi la risposta dell'assistente alla chat
+            addMessage("bot", assistantMessageContent);
+
+            // Aggiungi la risposta dell'assistente a sessionMessages
             sessionMessages.push({
-                role: 'assistant',
-                content: assistantMessage
+                role: "assistant",
+                content: [
+                    {
+                        type: "text",
+                        text: assistantMessageContent
+                    }
+                ]
             });
 
-            if (sessionMessages.length > 20) {
-                sessionMessages = sessionMessages.slice(-20);
+            // Limita sessionMessages agli ultimi 10 messaggi
+            if (sessionMessages.length > 10) {
+                sessionMessages = sessionMessages.slice(-10);
             }
         } else {
             console.error('Errore nella risposta:', data);
@@ -94,23 +126,14 @@ function addMessage(sender, text) {
     messageElement.classList.add("chat-message", sender);
 
     const messageText = document.createElement("p");
-    if (sender === "user") {
-        messageText.textContent = text;
-    } else {
-        messageText.innerHTML = text;
-    }
-
-    const timeStamp = document.createElement("span");
-    timeStamp.classList.add("timestamp");
-    const now = new Date();
-    timeStamp.textContent = now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes();
+    messageText.textContent = text;
 
     messageElement.appendChild(messageText);
-    messageElement.appendChild(timeStamp);
     chatMessages.appendChild(messageElement);
 
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
+
 
 
 
