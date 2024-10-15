@@ -1,8 +1,8 @@
 {
-  "name": "api",
+  "name": "chat-function",
   "version": "1.0.0",
-  "description": "Azure Functions for Supernity Chatbot",
-  "main": "chat.js",
+  "description": "Azure Function for chat",
+  "main": "index.js",
   "author": "",
   "license": "MIT",
   "dependencies": {
