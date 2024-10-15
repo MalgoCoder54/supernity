@@ -89,6 +89,7 @@ async function sendMessage() {
 
         let data;
         try {
+            addMessage("bot", "Risposta ricevuta dal server: ${responseText}");
             data = JSON.parse(responseText);
         } catch (error) {
             console.error('Errore nell\'analisi della risposta JSON:', error);
