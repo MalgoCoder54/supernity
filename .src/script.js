@@ -46,7 +46,68 @@ function sendMessage() {
     // Simula la risposta del bot
     const botResponse = "Hai scritto questo:<br>" + sessionMessages.join("<br>");
     addMessage("bot", botResponse);
+
 }
+
+
+
+
+async function sendMessage() {
+    const userInput = document.getElementById("user-input");
+    const message = userInput.value.trim();
+    if (message === "") return;
+
+    // Aggiungi il messaggio dell'utente alla chat
+    addMessage("user", message);
+
+    // Pulisci il campo di input
+    userInput.value = "";
+
+    // Aggiungi il messaggio alla lista della sessione
+    sessionMessages.push(message);
+
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                messages: [
+                    {
+                        role: 'system',
+                        content: "Sei un assistente AI chiamato 'Harry Potter' che fornisce informazioni sull'azienda Supernity. Ecco le informazioni che puoi fornire:\n\n[Inserisci qui le informazioni dettagliate come nel tuo prompt Python]\n\nQuando ci sono domande specifiche, rimanda sempre all'email 'info@supernity.it'.\n\nNon rispondere a nulla che non siano domande su Supernity, dicendo 'Hey amico, questo per me è fuori scopo' se ti fanno altre domande."
+                    },
+                    ...sessionMessages
+                ]
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            const assistantMessage = data.choices[0].message.content;
+            addMessage("bot", assistantMessage);
+
+            sessionMessages.push({
+                role: 'assistant',
+                content: assistantMessage
+            });
+
+            if (sessionMessages.length > 20) {
+                sessionMessages = sessionMessages.slice(-20);
+            }
+        } else {
+            console.error('Errore nella risposta:', data);
+            addMessage("bot", "Si è verificato un errore. Per favore, riprova più tardi.");
+        }
+    } catch (error) {
+        console.error('Errore nella richiesta:', error);
+        addMessage("bot", "Si è verificato un errore di connessione. Per favore, controlla la tua connessione internet e riprova.");
+    }
+}
+
+
 
 function addMessage(sender, text) {
     const chatMessages = document.getElementById("chat-messages");
